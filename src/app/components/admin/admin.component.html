@@ -1,0 +1,146 @@
+<h2>Gestión de Usuarios</h2>
+<button (click)="volverAlLogin()">Volver al Login</button>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Correo</th>
+    <th>Rol</th>
+    <th>Acciones</th>
+  </tr>
+<tr *ngFor="let usuario of usuariosNoAdmin">
+  <td>{{usuario.id_usuario}}</td>
+  <td>{{usuario.nombre}}</td>
+  <td>{{usuario.correo}}</td>
+  <td>{{usuario.rol}}</td>
+  <td>
+    <button (click)="borrarUsuario(usuario.id_usuario)">Borrar</button>
+  </td>
+</tr>
+</table>
+
+<hr>
+
+<h2>Gestión de Rutinas Básicas</h2>
+<form (ngSubmit)="agregarRutina()">
+  <select [(ngModel)]="nuevaRutina.objetivo" name="objetivo" required>
+    <option value="" disabled selected>Selecciona un objetivo</option>
+    <option *ngFor="let obj of objetivos" [value]="obj.objetivo">{{obj.objetivo}}</option>
+  </select>
+  <input [(ngModel)]="nuevaRutina.dias_por_semana" name="dias_por_semana" placeholder="Días por semana" required type="number">
+  <input [(ngModel)]="nuevaRutina.tipo_entrenamiento" name="tipo_entrenamiento" placeholder="Tipo de entrenamiento" required>
+  <input [(ngModel)]="nuevaRutina.semana" name="semana" placeholder="Semana" required>
+  <input [(ngModel)]="nuevaRutina.principios" name="principios" placeholder="Principios" required>
+  <input [(ngModel)]="nuevaRutina.enfoque" name="enfoque" placeholder="Enfoque" required>
+  <button type="submit">Agregar Rutina</button>
+</form>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Objetivo</th>
+    <th>Días por semana</th>
+    <th>Tipo de entrenamiento</th>
+    <th>Semana</th>
+    <th>Principios</th>
+    <th>Enfoque</th>
+    <th>Acciones</th>
+  </tr>
+  <tr *ngFor="let rutina of rutinas">
+    <td>{{rutina.id}}</td>
+    <td><input [(ngModel)]="rutina.objetivo" name="objetivo{{rutina.id}}"></td>
+    <td><input [(ngModel)]="rutina.dias_por_semana" name="dias_por_semana{{rutina.id}}" type="number"></td>
+    <td><input [(ngModel)]="rutina.tipo_entrenamiento" name="tipo_entrenamiento{{rutina.id}}"></td>
+    <td><input [(ngModel)]="rutina.semana" name="semana{{rutina.id}}"></td>
+    <td><input [(ngModel)]="rutina.principios" name="principios{{rutina.id}}"></td>
+    <td><input [(ngModel)]="rutina.enfoque" name="enfoque{{rutina.id}}"></td>
+    <td>
+      <button (click)="editarRutina(rutina)">Guardar</button>
+      <button (click)="eliminarRutina(rutina.id)">Eliminar</button>
+    </td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>Gestión de Dietas Básicas</h2>
+<form (ngSubmit)="agregarDieta()">
+  <input [(ngModel)]="nuevaDieta.nombre" name="nombreDieta" placeholder="Nombre dieta" required>
+
+  <!-- Select para tipo de dieta -->
+  <select [(ngModel)]="nuevaDieta.tipo" name="tipoDieta" required>
+    <option value="" disabled selected>Selecciona un tipo de dieta</option>
+    <option *ngFor="let tipo of tiposDieta" [value]="tipo.tipo">{{tipo.tipo}}</option>
+  </select>
+
+  <!-- Checkboxes para alergias -->
+  <div>
+    <label *ngFor="let alergia of alergias" style="margin-right: 10px;">
+      <input
+        type="checkbox"
+        [value]="alergia.alergia"
+        (change)="onAlergiaChange($event)"
+        [checked]="nuevaDieta.alergias?.includes(alergia.alergia)"
+      >
+      {{alergia.alergia}}
+    </label>
+  </div>
+
+  <input [(ngModel)]="nuevaDieta.descripcion" name="descDieta" placeholder="Descripción" required>
+  <button type="submit">Agregar Dieta</button>
+</form>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Tipo</th>
+    <th>Alergias</th>
+    <th>Descripción</th>
+    <th>Acciones</th>
+  </tr>
+  <tr *ngFor="let dieta of dietas">
+    <td>{{dieta.id}}</td>
+    <td><input [(ngModel)]="dieta.nombre" name="nombreDieta{{dieta.id}}"></td>
+    <td><input [(ngModel)]="dieta.tipo" name="tipoDieta{{dieta.id}}"></td>
+    <td><input [(ngModel)]="dieta.alergias" name="alergiasDieta{{dieta.id}}"></td>
+    <td><input [(ngModel)]="dieta.descripcion" name="descDieta{{dieta.id}}"></td>
+    <td>
+      <button (click)="editarDieta(dieta)">Guardar</button>
+      <button (click)="eliminarDieta(dieta.id)">Eliminar</button>
+    </td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>Gestión de Objetivos</h2>
+<form (ngSubmit)="agregarObjetivo()">
+  <input [(ngModel)]="nuevoObjetivo" name="nuevoObjetivo" placeholder="Nuevo objetivo" required>
+  <button type="submit">Agregar Objetivo</button>
+</form>
+<ul>
+  <li *ngFor="let obj of objetivos">{{obj.objetivo}}</li>
+</ul>
+
+<hr>
+<!-- Gestión de Alergias -->
+<h2>Gestión de Alergias</h2>
+<form (ngSubmit)="agregarAlergia()">
+  <input [(ngModel)]="nuevaAlergia" name="nuevaAlergia" placeholder="Nueva alergia" required>
+  <button type="submit">Agregar Alergia</button>
+</form>
+<ul>
+  <li *ngFor="let alergia of alergias">{{alergia.alergia}}</li>
+</ul>
+
+<hr>
+
+<!-- Gestión de Tipos de Dieta -->
+<h2>Gestión de Tipos de Dieta</h2>
+<form (ngSubmit)="agregarTipoDieta()">
+  <input [(ngModel)]="nuevoTipoDieta" name="nuevoTipoDieta" placeholder="Nuevo tipo de dieta" required>
+  <button type="submit">Agregar Tipo de Dieta</button>
+</form>
+<ul>
+  <li *ngFor="let tipo of tiposDieta">{{tipo.tipo}}</li>
+</ul>

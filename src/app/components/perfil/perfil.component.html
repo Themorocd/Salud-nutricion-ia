@@ -1,0 +1,365 @@
+<div class="perfil-container">
+  <!-- Barra superior de botones -->
+  <div class="perfil-barra-botones">
+    <button (click)="toggleRutina()" class="perfil-button rutina-button">
+      Ver rutina
+    </button>
+    <button (click)="toggleDieta()" class="perfil-button dieta-button">
+      Ver dieta
+    </button>
+    <button (click)="toggleEntrenadorIA()" class="perfil-button ia-button">
+      Entrenador IA
+    </button>
+  </div>
+
+  <!-- Nombre centrado -->
+  <div class="perfil-nombre">
+    <h1 class="perfil-title">{{ user.nombre }}</h1>
+  </div>
+
+  <div class="perfil-main">
+    <!-- Foto de perfil a la izquierda -->
+    <div class="perfil-foto-container">
+      <label for="foto" class="perfil-foto-label">
+        <img *ngIf="user.foto" [src]="'data:image/jpeg;base64,' + user.foto" alt="Foto de perfil" class="perfil-foto" />
+        <span *ngIf="!user.foto" class="perfil-foto-placeholder">Foto perfil</span>
+      </label>
+      <input type="file" id="foto" (change)="onFileSelected($event)" class="perfil-foto-input" />
+    </div>
+
+    <!-- Datos del usuario a la derecha -->
+    <div class="perfil-datos-container">
+      <form (submit)="guardarCambios()" enctype="multipart/form-data" class="perfil-form">
+        <table class="perfil-table">
+          <tbody>
+            <tr>
+              <th>Edad:</th>
+              <td>
+                <span *ngIf="!editando" class="perfil-text">{{ user.edad }} años</span>
+                <input *ngIf="editando" type="number" id="edad" [(ngModel)]="user.edad" name="edad"
+                  class="perfil-input" />
+              </td>
+            </tr>
+            <tr>
+              <th>Peso:</th>
+              <td>
+                <span *ngIf="!editando" class="perfil-text">{{ user.peso_actual }} kg</span>
+                <input *ngIf="editando" type="number" id="peso" [(ngModel)]="user.peso_actual" name="peso"
+                  class="perfil-input" />
+              </td>
+            </tr>
+            <tr>
+              <th>Altura:</th>
+              <td>
+                <span *ngIf="!editando" class="perfil-text">{{ user.altura }} cm</span>
+                <input *ngIf="editando" type="number" step="0.01" id="altura" [(ngModel)]="user.altura" name="altura"
+                  class="perfil-input" />
+              </td>
+            </tr>
+            <tr>
+              <th>Sexo:</th>
+              <td>
+                <span *ngIf="!editando" class="perfil-text">{{ user.sexo }}</span>
+                <select *ngIf="editando" id="sexo" [(ngModel)]="user.sexo" name="sexo" class="perfil-input">
+                  <option value="Hombre">Hombre</option>
+                  <option value="Mujer">Mujer</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>Fecha de Nacimiento:</th>
+              <td>
+                <span *ngIf="!editando" class="perfil-text">{{ user.fecha_nacimiento | date : "dd/MM/yyyy" }}</span>
+                <input *ngIf="editando" type="date" id="fecha_nacimiento" [(ngModel)]="user.fecha_nacimiento"
+                  name="fecha_nacimiento" class="perfil-input" />
+              </td>
+            </tr>
+            <tr>
+              <th>Correo:</th>
+              <td>
+                <span *ngIf="!editando" class="perfil-text">{{ user.correo }}</span>
+                <input *ngIf="editando" type="email" id="correo" [(ngModel)]="user.correo" name="correo"
+                  class="perfil-input" />
+              </td>
+            </tr>
+            <tr>
+              <th>Objetivo:</th>
+              <td>
+                <span *ngIf="!editando" class="perfil-text">{{ user.objetivo }}</span>
+                <select *ngIf="editando" id="objetivo" [(ngModel)]="user.objetivo" name="objetivo" class="perfil-input">
+                  <option *ngFor="let obj of objetivos" [value]="obj.objetivo">{{ obj.objetivo }}</option>
+                </select>
+              </td>
+            </tr>
+            <tr *ngIf="editando">
+              <td colspan="2" class="perfil-button-cell">
+                <button type="submit" class="perfil-button">
+                  Guardar Cambios
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+
+  <!-- Botones inferiores -->
+  <div class="perfil-botones-inferiores">
+    <button (click)="logout()" class="logout-button">Cerrar sesión</button>
+    <button (click)="toggleEditar()" class="perfil-button editar-button">
+      {{ editando ? "Cancelar" : "Editar" }}
+    </button>
+    <button type="button" class="descargar-pdf-btn" (click)="descargarPDF()">Descargar PDF de rutina y dieta</button>
+  </div>
+
+  <!-- Modal para la rutina -->
+  <div *ngIf="mostrarRutina" class="modal-overlay">
+    <div class="modal-content">
+      <ng-container *ngIf="rutinaIA?.length; else rutinaGenerica">
+        <h2 class="perfil-title">Tu rutina personalizada IA</h2>
+        <div *ngFor="let dia of rutinaIA">
+          <div class="dia-semana-titulo">{{ dia.dia }}</div>
+          <table class="rutina-table">
+            <thead>
+              <tr>
+                <th>Ejercicio</th>
+                <th>Serie</th>
+                <th>Repeticiones/Tiempo</th>
+                <th>Descanso</th>
+                <th>Marca completado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ejercicio of dia.ejercicios">
+                <td>{{ ejercicio.nombre }}</td>
+                <td>{{ ejercicio.series || "-" }}</td>
+                <td>{{ ejercicio.repeticiones || ejercicio.tiempo || "-" }}</td>
+                <td>{{ ejercicio.descanso || "-" }}</td>
+                <td>
+                  <input type="checkbox" [(ngModel)]="ejercicio.completado" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+      <ng-template #rutinaGenerica>
+        <h2 class="perfil-title">Rutina de Ejercicios</h2>
+        <table class="rutina-table">
+          <thead>
+            <tr>
+              <th>Días por Semana</th>
+              <th>Tipo de Entrenamiento</th>
+              <th>Semana</th>
+              <th>Principios</th>
+              <th>Enfoque</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ejercicio of rutina">
+              <td>{{ ejercicio.dias_por_semana }}</td>
+              <td>{{ ejercicio.tipo_entrenamiento }}</td>
+              <td>{{ ejercicio.semana }}</td>
+              <td>{{ ejercicio.principios }}</td>
+              <td>{{ ejercicio.enfoque }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-template>
+      <button (click)="toggleRutina()" class="modal-close-button">
+        Cerrar
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal para seleccionar dieta y alergias -->
+  <div *ngIf="mostrarSeleccionDieta" class="modal-overlay">
+    <div class="modal-content">
+      <h2 class="perfil-title">Selecciona tu Dieta</h2>
+      <form (submit)="guardarDieta($event)">
+        <div class="form-group">
+          <label for="tipoDieta">Tipo de Dieta:</label>
+          <select id="tipoDieta" [(ngModel)]="dietaSeleccionada.tipo" name="tipoDieta" class="perfil-input" required>
+            <option value="" disabled selected>Selecciona un tipo de dieta</option>
+            <option *ngFor="let tipo of tiposDieta" [value]="tipo.tipo">{{ tipo.tipo }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Alergias:</label>
+          <div>
+            <label *ngFor="let alergia of alergias" style="margin-right: 10px;">
+              <input type="checkbox" [value]="alergia.alergia" (change)="onAlergiaChange($event)"
+                [checked]="dietaSeleccionada.alergias?.includes(alergia.alergia)">
+              {{ alergia.alergia }}
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="perfil-button">Guardar</button>
+        <button type="button" (click)="toggleSeleccionDieta()" class="modal-close-button">
+          Cancelar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para mostrar la dieta -->
+  <div *ngIf="mostrarDieta" class="modal-overlay">
+    <div class="modal-content">
+      <ng-container *ngIf="dietaIA?.length; else dietaGenerica">
+        <h2 class="perfil-title">Tu dieta personalizada IA</h2>
+        <div *ngFor="let dia of dietaIA">
+          <div class="dia-semana-titulo">Día {{ dia.dia }}</div>
+          <table class="rutina-table">
+            <thead>
+              <tr>
+                <th>Comida</th>
+                <th>Alimentos</th>
+                <th>Cantidad</th>
+                <th>Marca completado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let comida of dia.comidas">
+                <td>{{ comida.nombre }}</td>
+                <td>{{ comida.alimentos }}</td>
+                <td>{{ comida.cantidad }}</td>
+                <td>
+                  <input type="checkbox" [(ngModel)]="comida.completado" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+      <ng-template #dietaGenerica>
+        <h2 class="perfil-title">Tu Dieta</h2>
+        <table class="rutina-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ dietaActual.nombre }}</td>
+              <td>{{ dietaActual.descripcion }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-template>
+      <button (click)="cambiarDieta()" class="perfil-button">
+        Cambiar Dieta
+      </button>
+      <button (click)="toggleDieta()" class="modal-close-button">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal para el Entrenador IA -->
+  <div *ngIf="mostrarEntrenadorIA" class="modal-overlay">
+    <div class="modal-content">
+      <h2 class="perfil-title">Entrenador IA</h2>
+      <!-- Selector de tipo de respuesta -->
+      <div class="ia-selector">
+        <button type="button" (click)="pedirIA('rutina')" [class.selected]="tipoRespuesta === 'rutina'">
+          Pedir Rutina
+        </button>
+        <button type="button" (click)="pedirIA('dieta')" [class.selected]="tipoRespuesta === 'dieta'">
+          Pedir Dieta
+        </button>
+      </div>
+      <div class="ia-chat">
+        <div *ngIf="cargandoIA" class="spinner-container">
+          <div class="spinner"></div>
+          <p>Generando respuesta de la IA...</p>
+        </div>
+        <div *ngFor="let mensaje of mensajesIA; let i = index" class="ia-mensaje">
+          <strong>{{ mensaje.usuario ? "Tú:" : "Entrenador_IA:" }}</strong>
+          <ng-container *ngIf="mensaje.usuario">
+            <p>{{ mensaje.texto }}</p>
+          </ng-container>
+          <ng-container *ngIf="!mensaje.usuario">
+            <!-- Solo en el último mensaje de la IA muestra las tablas -->
+            <ng-container *ngIf="
+                i === mensajesIA.length - 1 &&
+                  (rutinaIA?.length || dietaIA?.length);
+                else textoIA
+              ">
+              <ng-container *ngIf="rutinaIA?.length">
+                <h3>Rutina de entrenamiento</h3>
+                <div *ngFor="let dia of rutinaIA">
+                  <div class="dia-semana-titulo">{{ dia.dia }}</div>
+                  <table class="rutina-table">
+                    <thead>
+                      <tr>
+                        <th>Ejercicio</th>
+                        <th>Serie</th>
+                        <th>Repeticiones/Tiempo</th>
+                        <th>Descanso</th>
+                        <th>Marca completado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let ejercicio of dia.ejercicios">
+                        <td>{{ ejercicio.nombre }}</td>
+                        <td>{{ ejercicio.series || "-" }}</td>
+                        <td>
+                          {{ ejercicio.repeticiones || ejercicio.tiempo || "-" }}
+                        </td>
+                        <td>{{ ejercicio.descanso || "-" }}</td>
+                        <td>
+                          <input type="checkbox" [(ngModel)]="ejercicio.completado" />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <button class="perfil-button" (click)="guardarRutinaIA()">
+                  Guardar rutina IA
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="dietaIA?.length">
+                <h3>Dieta personalizada</h3>
+                <div *ngFor="let dia of dietaIA">
+                  <div class="dia-semana-titulo">Día {{ dia.dia }}</div>
+                  <table class="rutina-table">
+                    <thead>
+                      <tr>
+                        <th>Comida</th>
+                        <th>Alimentos</th>
+                        <th>Cantidad</th>
+                        <th>Marca completado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let comida of dia.comidas">
+                        <td>{{ comida.nombre }}</td>
+                        <td>{{ comida.alimentos }}</td>
+                        <td>{{ comida.cantidad }}</td>
+                        <td>
+                          <input type="checkbox" [(ngModel)]="comida.completado" />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <button class="perfil-button" (click)="guardarDietaIA()">
+                  Guardar dieta IA
+                </button>
+              </ng-container>
+            </ng-container>
+            <ng-template #textoIA>
+              <p>{{ mensaje.texto }}</p>
+            </ng-template>
+          </ng-container>
+        </div>
+      </div>
+      <button (click)="toggleEntrenadorIA()" class="modal-close-button">
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<h2 class="form-title">Registro de Usuario</h2>
+
+<form class="form-container" (ngSubmit)="onRegister()">
+  <div class="form-group">
+    <label for="nombre">Nombre:</label>
+    <input id="nombre" type="text" [(ngModel)]="nombre" name="nombre" required placeholder="Introduce tu nombre">
+  </div>
+
+  <div class="form-group">
+    <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+    <input id="fecha_nacimiento" type="date" [(ngModel)]="fecha_nacimiento" name="fecha_nacimiento" required>
+  </div>
+
+  <div class="form-group">
+    <label for="edad">Edad:</label>
+    <input id="edad" type="number" [(ngModel)]="edad" name="edad" required placeholder="Introduce tu edad">
+  </div>
+
+  <div class="form-group">
+    <label for="sexo">Sexo:</label>
+    <select id="sexo" [(ngModel)]="sexo" name="sexo" required>
+      <option value="" disabled selected>Selecciona tu sexo</option>
+      <option value="Hombre">Hombre</option>
+      <option value="Mujer">Mujer</option>
+      <option value="Otro">Otro</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="altura">Altura (cm):</label>
+    <input id="altura" type="number" [(ngModel)]="altura" name="altura" required placeholder="Introduce tu altura">
+  </div>
+
+  <div class="form-group">
+    <label for="peso_actual">Peso Actual (kg):</label>
+    <input id="peso_actual" type="number" [(ngModel)]="peso_actual" name="peso_actual" required
+      placeholder="Introduce tu peso actual">
+  </div>
+
+  <div class="form-group">
+    <label for="correo">Correo:</label>
+    <input id="correo" type="email" [(ngModel)]="correo" name="correo" required placeholder="Introduce tu correo">
+  </div>
+
+  <div class="form-group">
+    <label for="password">Contraseña:</label>
+    <input id="password" type="password" [(ngModel)]="password" name="password" required
+      placeholder="Introduce tu contraseña">
+  </div>
+
+  <div class="form-group">
+  <label for="repeatPassword">Repite la contraseña:</label>
+  <input id="repeatPassword" type="password" [(ngModel)]="repeatPassword" name="repeatPassword" required
+    placeholder="Repite tu contraseña">
+</div>
+
+  <div class="form-group">
+    <label for="objetivo">Objetivo:</label>
+    <select id="objetivo" [(ngModel)]="objetivo" name="objetivo" required>
+      <option value="" disabled selected>Selecciona tu objetivo</option>
+      <option *ngFor="let obj of objetivos" [value]="obj.objetivo">{{ obj.objetivo }}</option>
+    </select>
+  </div>
+
+  <button class="form-button" type="submit">Registrarse</button>
+</form>

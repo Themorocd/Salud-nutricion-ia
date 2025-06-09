@@ -1,0 +1,12 @@
+<div class="app-container" [ngClass]="currentView">
+  <main class="main-content">
+    <div class="form-box">
+      <nav class="form-navbar">
+        <a *ngIf="!isAuthenticated()" href="/login" routerLinkActive="active" class="form-navbar-link">Login</a>
+        <a *ngIf="!isAuthenticated()" href="/register" routerLinkActive="active" class="form-navbar-link">Registro</a>
+        <a *ngIf="!isAuthenticated()" href="/recuperacion" routerLinkActive="active" class="form-navbar-link">¿Olvidaste tu contraseña?</a>
+      </nav>
+      <router-outlet></router-outlet> <!-- Aquí se cargarán los componentes de las rutas -->
+    </div>
+  </main>
+</div>
