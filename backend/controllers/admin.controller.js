@@ -108,6 +108,6 @@ exports.addTipoDieta = (req, res) => {
   const { tipo } = req.body;
   db.query('INSERT INTO tipos_dieta (tipo) VALUES (?)', [tipo], (err) => {
     if (err) return res.status(500).json({ message: 'Error al agregar tipo de dieta' });
-    res.json({ message: 'Tipo de dieta agregado.' });
+    res.json({ message: 'Tipo de dieta agregado' });
   });
 };
